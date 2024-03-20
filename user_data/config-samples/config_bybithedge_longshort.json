@@ -1,0 +1,70 @@
+{
+    "hedge_mode": true,
+    "multicore": false,
+    "state_synchronize_interval_s": 5,
+    "initial_entry_block_ms": 11000,
+    "symbol_configs": [
+      {
+        "symbol": [
+          "RIFUSDT"
+        ],
+        "exchange_leverage": 10,
+        "long": {
+          "enabled": true,
+          "strategy": "BybitHedgingBigLongStrategy",
+          "wallet_exposure_ratio": 2,
+          "strategy_config": {
+            "entry_order_type": "LIMIT",
+            "limit_orders_reissue_threshold": 0.001,
+            "hedge_pct_of_full_long_quantity": 1,
+            "repost_lower_allowed": false,
+            "dca": {
+              "period": "1D",
+              "period_timeframe": "1m",
+              "algo": "LIN_LINEAR_PEAKS_TROUGHS_HIGHLOW",
+              "nr_clusters": 5,
+              "outer_price_distance": 0.045,
+              "ratio_power": 1.4,
+              "allow_add_new_smaller_dca": false
+            },
+            "tp": {
+              "minimum_tp": 0.0022
+            },
+            "stoploss": {
+              "last_entry_trigger_distance": 0.01,
+              "post_stoploss_mode": "NORMAL",
+              "order_type": "STOP"
+            }
+          }
+        },
+        "short": {
+          "enabled": true,
+          "strategy": "BybitHedgingBigShortStrategy",
+          "wallet_exposure_ratio": 2,
+          "strategy_config": {
+            "entry_order_type": "LIMIT",
+            "limit_orders_reissue_threshold": 0.001,
+            "hedge_pct_of_full_long_quantity": 1,
+            "repost_lower_allowed": false,
+            "dca": {
+              "period": "1D",
+              "period_timeframe": "1m",
+              "algo": "LIN_LINEAR_PEAKS_TROUGHS_HIGHLOW",
+              "nr_clusters": 5,
+              "outer_price_distance": 0.045,
+              "ratio_power": 1.4,
+              "allow_add_new_smaller_dca": false
+            },
+            "tp": {
+              "minimum_tp": 0.0022
+            },
+            "stoploss": {
+              "last_entry_trigger_distance": 0.01,
+              "post_stoploss_mode": "NORMAL",
+              "order_type": "STOP"
+            }
+          }
+        }
+      }
+    ]
+  }
