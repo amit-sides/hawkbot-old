@@ -148,3 +148,5 @@ venv*/*
 profile_output.txt
 profile_results.txt
 *.pstats
+
+*.rkey
