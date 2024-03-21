@@ -1,6 +1,7 @@
 {
   "hedge_mode": true,
   "multicore": false,
+  "persisted_tick_purge_expiry_time": "5m",
   "symbol_configs": [
     {
       "symbol": [

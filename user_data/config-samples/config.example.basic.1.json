@@ -1,6 +1,6 @@
 {
-  "account": "binance_01",
   "hedge_mode": true,
+  "persisted_tick_purge_expiry_time": "5m",
   "symbol_configs": [
     {
       "symbol": "TRXUSDT",

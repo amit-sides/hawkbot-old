@@ -13,7 +13,8 @@
   "bybit_01": {
     "exchange": "bybit",
     "key": "",
-    "secret": ""
+    "secret": "",
+    "unified": false
   },
   "kite_01": {
     "exchange": "kite",
