@@ -189,12 +189,14 @@ class BigShortStrategy(AbstractBaseStrategy):
                                          min_cost=symbol_information.minimal_sell_cost)
             if dca_quantity < min_entry_qty:
                 if not self.override_insufficient_grid_funds:
+                    raw_quantity = dca_quantity_record.raw_quantity
+                    required_balance = exposed_balance * (min_entry_qty / raw_quantity)
                     logger.warning(f'{symbol} {position_side.name}: The entry at price {dca_price} with quantity '
-                                   f'{dca_quantity} does not meet minimum quantity {min_entry_qty}. The quantities are '
-                                   f'based on available funds {wallet_balance}. In order to make the bot enter, either '
-                                   f'1) increase the assigned balance, 2) reduce the number of clusters, '
-                                   f'3) force the bot to run with an incomplete grid by setting '
-                                   f'\'override_insufficient_grid_funds\' to true')
+                                   f'{dca_quantity} ({raw_quantity}) does not meet minimum quantity {min_entry_qty}. The quantities are '
+                                   f'based on exposed balance {exposed_balance}. In order to make the bot enter, either '
+                                   f'1) increase the exposed balance to (roughly) a minimum of {required_balance} by having a bigger wallet_exposure_ratio, or adding equity if '
+                                   f'you want to maintain the same settings, 2) reduce the number of clusters, 3) reduce the DCA strength (ratio power, quantity multiplier or '
+                                   f'desired position distance), 4) force the bot to run with an incomplete grid by setting \'override_insufficient_grid_funds\' to true')
                     return
 
             if self.entry_order_type == 'MARKET' and price_index == 0:

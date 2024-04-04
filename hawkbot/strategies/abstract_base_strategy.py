@@ -241,7 +241,7 @@ class AbstractBaseStrategy(Strategy):
                     current_price: float):
         if self.position_side == PositionSide.BOTH:
             if not self.exchange_state.has_open_position(symbol=symbol, position_side=PositionSide.BOTH):
-                user_log.info(f'{symbol} {PositionSide.BOTH.name}: During shutdown, there were open orders detected '
+                user_log.info(f'{symbol} {PositionSide.BOTH.name}: During deactivation, there were open orders detected '
                               f'but no open position. Cancelling all open orders as a precaution', __name__)
                 open_orders = self.exchange_state.all_open_orders(symbol=symbol, position_side=PositionSide.BOTH)
                 self.order_executor.cancel_orders(open_orders)
@@ -249,7 +249,7 @@ class AbstractBaseStrategy(Strategy):
             for position_side in [PositionSide.LONG, PositionSide.SHORT]:
                 if not self.exchange_state.has_open_position(symbol=symbol, position_side=position_side):
                     user_log.info(
-                        f'{symbol} {position_side.name}: During shutdown, there were open orders detected '
+                        f'{symbol} {position_side.name}: During deactivation, there were open orders detected '
                         f'but no open position. Cancelling all open orders as a precaution', __name__)
                     open_orders = self.exchange_state.all_open_orders(symbol=symbol, position_side=position_side)
                     self.order_executor.cancel_orders(open_orders)
