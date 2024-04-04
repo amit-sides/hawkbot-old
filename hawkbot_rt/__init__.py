@@ -1,4 +1,5 @@
-# Pyarmor 8.5.0 (pro), 005619, 2024-04-04T08:30:20.412868
+# Pyarmor 8.5.2 (pro), 005619, 2024-04-04T11:18:03.679947
+from sys import version_info as py_version
 def __pyarmor__():
     import platform
     import sys
@@ -24,7 +25,7 @@ def __pyarmor__():
     def format_machine():
         mach = platform.machine().lower()
         arch_table = (
-            ('x86', ('i386', 'i486', 'i586', 'i686')),
+            ('x86', ('i386', 'i486', 'i586', 'i686', 'x86')),
             ('x86_64', ('x64', 'x86_64', 'amd64', 'intel')),
             ('arm', ('armv5',)),
             ('armv6', ('armv6l',)),
@@ -43,7 +44,7 @@ def __pyarmor__():
         bitness = calcsize('P'.encode()) * 8
         if bitness == 32:
             mach = 'x86'
-    mach = 'universal' if plat == 'darwin' else mach
-    name = '.'.join(['_'.join([plat, mach]), 'pyarmor_runtime'])
+    # mach = 'universal' if plat == 'darwin' else mach
+    name = '.'.join(['py%d%d' % py_version[:2], '_'.join([plat, mach]), 'pyarmor_runtime'])
     return __import__(name, globals(), locals(), ['__pyarmor__'], level=1)
 __pyarmor__ = __pyarmor__().__pyarmor__
