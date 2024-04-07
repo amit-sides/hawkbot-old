@@ -11,7 +11,7 @@ from hawkbot.logging import user_log
 from hawkbot.plugins.clustering_sr.algo_type import AlgoType
 from hawkbot.plugins.clustering_sr.algos.algo import Algo
 from hawkbot.strategies.abstract_base_strategy import AbstractBaseStrategy
-from hawkbot.utils import calc_min_qty, calc_diff, readable_pct, period_as_ms, round_, fill_optional_parameters
+from hawkbot.utils import calc_min_qty, calc_diff, readable_pct, period_as_ms, fill_optional_parameters
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +32,7 @@ class BigLongStrategy(AbstractBaseStrategy):
 
     def init_config(self):
         super().init_config()
+
         self.redis = Redis(host="127.0.0.1", port=self.redis_port, decode_responses=True)
         optional_parameters = ['no_entry_within_resistance_distance',
                                'no_entry_within_resistance_period',
@@ -102,6 +103,17 @@ class BigLongStrategy(AbstractBaseStrategy):
                 self.redis.set(name=f'{DynamicEntrySelector.DEACTIVATABLE_SYMBOL_POSITIONSIDE}_{symbol}_{self.position_side.name}', value=int(True))
                 return
         self.redis.set(name=f'{DynamicEntrySelector.DEACTIVATABLE_SYMBOL_POSITIONSIDE}_{symbol}_{self.position_side.name}', value=int(False))
+
+        if self.hedge_plugin.is_hedge_applicable(symbol=symbol, position_side=position_side, hedge_config=self.hedge_config):
+            existing_orders = self.exchange_state.open_entry_orders(symbol=symbol, position_side=position_side)
+            hedge_orders = self.hedge_plugin.calculate_hedge_orders(symbol=symbol,
+                                                                    position_side=position_side,
+                                                                    symbol_information=symbol_information,
+                                                                    wallet_balance=wallet_balance,
+                                                                    hedge_config=self.hedge_config)
+            self.enforce_grid(new_orders=hedge_orders, exchange_orders=existing_orders, lowest_price_first=False)
+            logger.info(f'{symbol} {position_side.name}: Finished placing hedge orders')
+            return
 
         if self.price_outside_boundaries(symbol=symbol, position_side=position_side, current_price=current_price):
             open_orders = self.exchange_state.all_open_orders(symbol=symbol, position_side=position_side)
@@ -268,10 +280,10 @@ class BigLongStrategy(AbstractBaseStrategy):
         if start_date is None:
             candles = []
         else:
-            candles = self.candle_store.get_candles_in_range(symbol=symbol,
-                                                             timeframe=self.no_entry_within_resistance_timeframe,
-                                                             start_date=start_date,
-                                                             end_date=self.time_provider.get_utc_now_timestamp())
+            candles = self.candlestore_client.get_candles_in_range(symbol=symbol,
+                                                                   timeframe=self.no_entry_within_resistance_timeframe,
+                                                                   start_date=start_date,
+                                                                   end_date=self.time_provider.get_utc_now_timestamp())
         support_resistances = algo.calculate_levels(symbol=symbol,
                                                     position_side=PositionSide.SHORT,
                                                     candles=candles,

@@ -107,6 +107,17 @@ class BigShortStrategy(AbstractBaseStrategy):
                 return
         self.redis.set(name=f'{DynamicEntrySelector.DEACTIVATABLE_SYMBOL_POSITIONSIDE}_{symbol}_{self.position_side.name}', value=int(False))
 
+        if self.hedge_plugin.is_hedge_applicable(symbol=symbol, position_side=position_side, hedge_config=self.hedge_config):
+            existing_orders = self.exchange_state.open_entry_orders(symbol=symbol, position_side=position_side)
+            hedge_orders = self.hedge_plugin.calculate_hedge_orders(symbol=symbol,
+                                                                    position_side=position_side,
+                                                                    symbol_information=symbol_information,
+                                                                    wallet_balance=wallet_balance,
+                                                                    hedge_config=self.hedge_config)
+            self.enforce_grid(new_orders=hedge_orders, exchange_orders=existing_orders, lowest_price_first=False)
+            logger.info(f'{symbol} {position_side.name}: Finished placing hedge orders')
+            return
+
         if self.price_outside_boundaries(symbol=symbol, position_side=position_side, current_price=current_price):
             open_orders = self.exchange_state.all_open_orders(symbol=symbol, position_side=position_side)
             self.order_executor.cancel_orders(open_orders)
@@ -292,10 +303,10 @@ class BigShortStrategy(AbstractBaseStrategy):
         if start_date is None:
             candles = []
         else:
-            candles = self.candle_store.get_candles_in_range(symbol=symbol,
-                                                             timeframe=self.no_entry_within_support_timeframe,
-                                                             start_date=start_date,
-                                                             end_date=self.time_provider.get_utc_now_timestamp())
+            candles = self.candlestore_client.get_candles_in_range(symbol=symbol,
+                                                                   timeframe=self.no_entry_within_support_timeframe,
+                                                                   start_date=start_date,
+                                                                   end_date=self.time_provider.get_utc_now_timestamp())
         support_resistances = algo.calculate_levels(symbol=symbol,
                                                     position_side=PositionSide.LONG,
                                                     candles=candles,

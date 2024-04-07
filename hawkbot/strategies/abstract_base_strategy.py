@@ -9,6 +9,7 @@ from hawkbot.plugins.clustering_sr.clustering_sr_plugin import ClusteringSupport
 from hawkbot.plugins.dca.dca_plugin import DcaPlugin, DcaConfig
 from hawkbot.plugins.gridstorage.gridstorage_plugin import GridStoragePlugin
 from hawkbot.plugins.gtfo.gtfo_plugin import GtfoPlugin, GtfoConfig
+from hawkbot.plugins.hedge_plugin.hedge_plugin import HedgePlugin, HedgeConfig
 from hawkbot.plugins.ob_tp.ob_tp_plugin import ObTpConfig, ObTpPlugin
 from hawkbot.plugins.stoploss.stoploss_plugin import StoplossPlugin, StoplossConfig
 from hawkbot.plugins.stoplosses.data_classes import StoplossesConfig
@@ -33,6 +34,7 @@ class AbstractBaseStrategy(Strategy):
     wiggle_plugin: WigglePlugin = None
     gtfo_plugin: GtfoPlugin = None
     autoreduce_plugin: AutoreducePlugin = None
+    hedge_plugin: HedgePlugin = None
 
     def __init__(self):
         super().__init__()
@@ -45,6 +47,7 @@ class AbstractBaseStrategy(Strategy):
         self.wiggle_config: WiggleConfig = None
         self.gtfo_config: GtfoConfig = None
         self.autoreduce_config: AutoreduceConfig = None
+        self.hedge_config: HedgeConfig = None
         self.no_entry_above: float = None
         self.no_entry_below: float = None
         self.previous_price: float = None
@@ -118,6 +121,11 @@ class AbstractBaseStrategy(Strategy):
             self.autoreduce_config = self.autoreduce_plugin.parse_config(self.strategy_config['autoreduce'])
         else:
             self.autoreduce_config = self.autoreduce_plugin.parse_config({})
+
+        if 'hedge' in self.strategy_config:
+            self.hedge_config = self.hedge_plugin.parse_config(self.strategy_config['hedge'])
+        else:
+            self.hedge_config = self.hedge_plugin.parse_config({})
 
     def get_initializing_config(self) -> InitializeConfig:
         init_config = InitializeConfig()
@@ -227,6 +235,7 @@ class AbstractBaseStrategy(Strategy):
 
         self.enforce_autoreduce(symbol=symbol,
                                 position_side=position.position_side,
+                                position=position,
                                 symbol_information=symbol_information,
                                 current_price=current_price)
 
@@ -270,7 +279,6 @@ class AbstractBaseStrategy(Strategy):
                               position_side=self.position_side,
                               symbol_information=symbol_information,
                               current_price=current_price)
-
 
     def on_dca_order_filled(self,
                             symbol: str,
@@ -357,6 +365,7 @@ class AbstractBaseStrategy(Strategy):
 
         self.enforce_autoreduce(symbol=symbol,
                                 position_side=self.position_side,
+                                position=position,
                                 symbol_information=symbol_information,
                                 current_price=current_price)
 
@@ -388,6 +397,7 @@ class AbstractBaseStrategy(Strategy):
 
         self.enforce_autoreduce(symbol=symbol,
                                 position_side=position.position_side,
+                                position=position,
                                 symbol_information=symbol_information,
                                 current_price=current_price)
 
@@ -446,6 +456,7 @@ class AbstractBaseStrategy(Strategy):
 
         self.enforce_autoreduce(symbol=symbol,
                                 position_side=position.position_side,
+                                position=position,
                                 symbol_information=symbol_information,
                                 current_price=current_price)
 
@@ -713,6 +724,7 @@ class AbstractBaseStrategy(Strategy):
     def enforce_autoreduce(self,
                            symbol: str,
                            position_side: PositionSide,
+                           position: Position,
                            symbol_information: SymbolInformation,
                            current_price: float):
         if self.autoreduce_config.enabled is False:
@@ -721,6 +733,7 @@ class AbstractBaseStrategy(Strategy):
         new_autoreduce_orders = self.autoreduce_plugin.calculate_autoreduce_orders(
             symbol=symbol,
             position_side=position_side,
+            position=position,
             autoreduce_config=self.autoreduce_config,
             current_price=current_price,
             symbol_information=symbol_information)
