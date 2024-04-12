@@ -8,7 +8,7 @@ from hawkbot.core.data_classes import Tick, OrderSet, SymbolInformation, Exchang
     PositionSide, Mode, Position
 from hawkbot.core.dynamic_entry.candidate_state import CandidateState
 from hawkbot.core.liquidation.liquidationstore import LiquidationStore
-from hawkbot.core.model import Order, OrderTypeIdentifier, LimitOrder
+from hawkbot.core.model import Order, OrderTypeIdentifier, LimitOrder, MarketOrder
 from hawkbot.core.order_executor import OrderExecutor
 from hawkbot.core.orderbook.orderbook import OrderBook
 from hawkbot.core.strategy.data_classes import InitializeConfig
@@ -638,8 +638,8 @@ class Strategy(object):
                                    f'This situation is expected to correct itself')
                     return False
 
-        if sorted(new_orders, key=lambda x: x.price) != \
-                sorted(exchange_orders, key=lambda x: x.price):
+        market_order = any([isinstance(o, MarketOrder) for o in new_orders])
+        if market_order or (sorted(new_orders, key=lambda x: x.price) != sorted(exchange_orders, key=lambda x: x.price)):
             if len(new_orders) > 0:
                 symbol = new_orders[0].symbol
                 position_side = new_orders[0].position_side
@@ -668,7 +668,10 @@ class Strategy(object):
         return False
 
     def _create_orders(self, exchange_orders: List[Order], new_orders: List[Order], lowest_price_first: bool):
-        new_orders.sort(key=lambda x: x.price, reverse=not lowest_price_first)
+        market_orders = [o for o in new_orders if isinstance(o, MarketOrder)]
+        new_orders_to_place = [o for o in new_orders if not isinstance(o, MarketOrder)]
+        new_orders_to_place.sort(key=lambda x: x.price, reverse=not lowest_price_first)
+        new_orders_to_place.extend(market_orders)
         orders_to_place = []
         for new_order in new_orders:
             if new_order not in exchange_orders:

@@ -28,6 +28,7 @@ class BigShortStrategy(AbstractBaseStrategy):
         self.no_entry_within_support_timeframe: Timeframe = None
         self.no_entry_within_support_algo: Algo = None
         self.repost_higher_allowed: bool = True
+        self.execute_orders_enabled: bool = True
         self.redis = None
 
     def init_config(self):
@@ -37,7 +38,8 @@ class BigShortStrategy(AbstractBaseStrategy):
                                'no_entry_within_support_period',
                                'no_entry_within_support_nr_clusters',
                                'override_insufficient_grid_funds',
-                               'repost_higher_allowed']
+                               'repost_higher_allowed',
+                               'execute_orders_enabled']
         fill_optional_parameters(target=self, config=self.strategy_config, optional_parameters=optional_parameters)
 
         if 'no_entry_within_support_timeframe' in self.strategy_config:
@@ -265,9 +267,12 @@ class BigShortStrategy(AbstractBaseStrategy):
                             f'maximum allowed loss of {maximum_allowed_loss} would be {first_trigger_price}, which is '
                             f'above the last DCA price of {last_dca_price} (orders: {orders_str})')
 
-        existing_orders = self.exchange_state.open_entry_orders(symbol=symbol, position_side=position_side)
-        self.enforce_grid(new_orders=limit_orders, exchange_orders=existing_orders, lowest_price_first=False)
-        logger.info(f'{symbol} {position_side.name}: Finished placing orders')
+        if self.execute_orders_enabled is True:
+            existing_orders = self.exchange_state.open_entry_orders(symbol=symbol, position_side=position_side)
+            self.enforce_grid(new_orders=limit_orders, exchange_orders=existing_orders, lowest_price_first=False)
+            logger.info(f'{symbol} {position_side.name}: Finished placing orders')
+        elif len(limit_orders) > 0:
+            logger.info(f'{symbol} {position_side.name}: Order execution is explicitly disabled in the config')
 
     def on_initial_entry_order_filled(self,
                                       symbol: str,

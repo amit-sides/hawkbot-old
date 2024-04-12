@@ -3,6 +3,10 @@ but can be enabled with a single argument to the commandline.
 
 Due to the flexible plugin mechanism Hawkbot provides, it is also possible to write your own plugin to provide a custom UI.
 
+The easiest way to enable the UI is by passing the `-W` argument to the commandline when starting the bot:
+
+```python trade.py -W```
+
 ### Web UI
 
 The web UI provides a web-based interface to monitor & interact with the bot. This UI is easier on the eyes, takes
