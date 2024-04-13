@@ -13,7 +13,7 @@ interaction with the core.
 
 The bot supports running multiple symbols in 1 instance, running futures, spot and supports websockets out of the box.
 
-For further information on how to use the bot, please refer to the [documentation](docs/index.md)
+For further information on how to use the bot, please refer to the [documentation](docs/index.md).
 
 # Support
 You can join discord at https://discord.gg/GjZ7Eej2N9
