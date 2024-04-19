@@ -364,7 +364,7 @@ class Strategy(object):
         position = self.exchange_state.position(symbol=symbol, position_side=self.position_side)
 
         if Trigger.SHUTDOWN in triggers:
-            user_log.info(f'{symbol} {self.position_side.name}: Received trigger SHUTDOWN', __name__)
+            user_log.debug(f'{symbol} {self.position_side.name}: Received trigger SHUTDOWN', __name__)
             self.on_shutdown(symbol=symbol,
                              position=position,
                              symbol_information=symbol_information,
@@ -372,7 +372,7 @@ class Strategy(object):
                              current_price=self.exchange_state.last_tick_price(symbol))
             self.config.shutdown()
         if Trigger.POSITION_CLOSED in triggers:
-            user_log.info(f'{symbol} {self.position_side.name}: Received trigger POSITION_CLOSED', __name__)
+            user_log.debug(f'{symbol} {self.position_side.name}: Received trigger POSITION_CLOSED', __name__)
             self.on_position_closed(symbol=symbol,
                                     position=position,
                                     symbol_information=symbol_information,
@@ -385,7 +385,7 @@ class Strategy(object):
                             f'changed to NORMAL')
                 triggers.append(Trigger.NO_OPEN_POSITION)
 
-            user_log.info(f'{symbol} {self.position_side.name}: Received trigger MODE_CHANGED', __name__)
+            user_log.debug(f'{symbol} {self.position_side.name}: Received trigger MODE_CHANGED', __name__)
             self.on_mode_changed(symbol=symbol,
                                  position=position,
                                  symbol_information=symbol_information,
@@ -394,7 +394,7 @@ class Strategy(object):
                                  new_mode=self.position_side_config.mode)
 
         if Trigger.STOPLOSS_FILLED in triggers:
-            user_log.info(f'{symbol} {self.position_side.name}: Received trigger STOPLOSS_FILLED', __name__)
+            user_log.debug(f'{symbol} {self.position_side.name}: Received trigger STOPLOSS_FILLED', __name__)
             self.on_stoploss_filled(symbol=symbol,
                                     position=position,
                                     symbol_information=symbol_information,
@@ -412,8 +412,7 @@ class Strategy(object):
                     self.order_executor.cancel_orders(orders)
                 return
             else:
-                if self.log_trigger(Trigger.NO_OPEN_POSITION):
-                    user_log.info(f'{symbol} {self.position_side.name}: Received trigger NO_OPEN_POSITION', __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: Received trigger NO_OPEN_POSITION', __name__)
                 self.on_no_open_position(symbol=symbol,
                                          position=position,
                                          symbol_information=symbol_information,
@@ -421,24 +420,24 @@ class Strategy(object):
                                          current_price=self.exchange_state.last_tick_price(symbol))
         else:
             if Trigger.STRATEGY_ACTIVATED in triggers:
-                user_log.info(f'{symbol} {self.position_side.name}: Received trigger STRATEGY_ACTIVATED',
-                              __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: Received trigger STRATEGY_ACTIVATED',
+                               __name__)
                 self.on_strategy_activated(symbol=symbol,
                                            position=position,
                                            symbol_information=symbol_information,
                                            wallet_balance=self.exchange_state.symbol_balance(symbol),
                                            current_price=self.exchange_state.last_tick_price(symbol))
             if Trigger.OPEN_POSITION_ON_STARTUP in triggers:
-                user_log.info(f'{symbol} {self.position_side.name}: Received trigger OPEN_POSITION_ON_STARTUP',
-                              __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: Received trigger OPEN_POSITION_ON_STARTUP',
+                               __name__)
                 self.on_position_on_startup(symbol=symbol,
                                             position=position,
                                             symbol_information=symbol_information,
                                             wallet_balance=self.exchange_state.symbol_balance(symbol),
                                             current_price=self.exchange_state.last_tick_price(symbol))
             if Trigger.NO_POSITION_ON_STARTUP in triggers:
-                user_log.info(f'{symbol} {self.position_side.name}: Received trigger NO_POSITION_AT_STARTUP',
-                              __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: Received trigger NO_POSITION_AT_STARTUP',
+                               __name__)
                 self.on_no_position_on_startup(symbol=symbol,
                                                position=position,
                                                symbol_information=symbol_information,
@@ -449,84 +448,84 @@ class Strategy(object):
                     logger.debug(f'{symbol} {position.position_side.name}: Skipping trigger POSITION_CHANGE_DETECTED, '
                                  f'because the trigger INITIAL_ENTRY_FILLED is given off at the same time')
                 else:
-                    user_log.info(f'{symbol} {position.position_side.name}: Received trigger POSITION_CHANGE_DETECTED', __name__)
+                    user_log.debug(f'{symbol} {position.position_side.name}: Received trigger POSITION_CHANGE_DETECTED', __name__)
                     self.on_position_change(symbol=symbol,
                                             position=position,
                                             symbol_information=symbol_information,
                                             wallet_balance=self.exchange_state.symbol_balance(symbol),
                                             current_price=self.exchange_state.last_tick_price(symbol))
             if Trigger.INITIAL_ENTRY_FILLED in triggers:
-                user_log.info(f'{symbol} {self.position_side.name}: Received trigger INITIAL_ENTRY_FILLED', __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: Received trigger INITIAL_ENTRY_FILLED', __name__)
                 self.on_initial_entry_order_filled(symbol=symbol,
                                                    position=position,
                                                    symbol_information=symbol_information,
                                                    wallet_balance=self.exchange_state.symbol_balance(symbol),
                                                    current_price=self.exchange_state.last_tick_price(symbol))
             if Trigger.TP_ORDER_FILLED in triggers:
-                user_log.info(f'{symbol} {self.position_side.name}: Received trigger TP_ORDER_FILLED', __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: Received trigger TP_ORDER_FILLED', __name__)
                 self.on_tp_order_filled(symbol=symbol,
                                         position=position,
                                         symbol_information=symbol_information,
                                         wallet_balance=self.exchange_state.symbol_balance(symbol),
                                         current_price=self.exchange_state.last_tick_price(symbol))
             if Trigger.DCA_ORDER_FILLED in triggers:
-                user_log.info(f'{symbol} {self.position_side.name}: Received trigger DCA_ORDER_FILLED', __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: Received trigger DCA_ORDER_FILLED', __name__)
                 self.on_dca_order_filled(symbol=symbol,
                                          position=position,
                                          symbol_information=symbol_information,
                                          wallet_balance=self.exchange_state.symbol_balance(symbol),
                                          current_price=self.exchange_state.last_tick_price(symbol))
             if Trigger.ENTRY_FILLED in triggers:
-                user_log.info(f'{symbol} {self.position_side.name}: Received trigger ENTRY_FILLED', __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: Received trigger ENTRY_FILLED', __name__)
                 self.on_entry_order_filled(symbol=symbol,
                                            position=position,
                                            symbol_information=symbol_information,
                                            wallet_balance=self.exchange_state.symbol_balance(symbol),
                                            current_price=self.exchange_state.last_tick_price(symbol))
             if Trigger.REDUCE_FILLED in triggers:
-                user_log.info(f'{symbol} {self.position_side.name}: Received trigger REDUCE_FILLED', __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: Received trigger REDUCE_FILLED', __name__)
                 self.on_reduce_order_filled(symbol=symbol,
                                             position=position,
                                             symbol_information=symbol_information,
                                             wallet_balance=self.exchange_state.symbol_balance(symbol),
                                             current_price=self.exchange_state.last_tick_price(symbol))
             if Trigger.POSITION_REDUCED in triggers:
-                user_log.info(f'{symbol} {self.position_side.name}: Received trigger POSITION_REDUCED', __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: Received trigger POSITION_REDUCED', __name__)
                 self.on_position_reduced(symbol=symbol,
                                          position=position,
                                          symbol_information=symbol_information,
                                          wallet_balance=self.exchange_state.symbol_balance(symbol),
                                          current_price=self.exchange_state.last_tick_price(symbol))
             if Trigger.TP_REFILL_FILLED in triggers:
-                user_log.info(f'{symbol} {self.position_side.name}: Received trigger TP_REFILL_FILLED', __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: Received trigger TP_REFILL_FILLED', __name__)
                 self.on_tp_refill_order_filled(symbol=symbol,
                                                position=position,
                                                symbol_information=symbol_information,
                                                wallet_balance=self.exchange_state.symbol_balance(symbol),
                                                current_price=self.exchange_state.last_tick_price(symbol))
             if Trigger.ORDER_CANCELLED in triggers:
-                user_log.info(f'{symbol} {self.position_side.name}: Received trigger ORDER_CANCELLED', __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: Received trigger ORDER_CANCELLED', __name__)
                 self.on_order_cancelled(symbol=symbol,
                                         position=position,
                                         symbol_information=symbol_information,
                                         wallet_balance=self.exchange_state.symbol_balance(symbol),
                                         current_price=self.exchange_state.last_tick_price(symbol))
             if Trigger.WALLET_CHANGED in triggers:
-                user_log.info(f'{symbol} {self.position_side.name}: Received trigger WALLET_CHANGED', __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: Received trigger WALLET_CHANGED', __name__)
                 self.on_wallet_changed(symbol=symbol,
                                        position=position,
                                        symbol_information=symbol_information,
                                        wallet_balance=self.exchange_state.symbol_balance(symbol),
                                        current_price=self.exchange_state.last_tick_price(symbol))
             if Trigger.WIGGLE_DECREASE_FILLED in triggers:
-                user_log.info(f'{symbol} {self.position_side.name}: Received trigger WIGGLE_DECREASE_FILLED', __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: Received trigger WIGGLE_DECREASE_FILLED', __name__)
                 self.on_wiggle_decrease_filled(symbol=symbol,
                                                position=position,
                                                symbol_information=symbol_information,
                                                wallet_balance=self.exchange_state.symbol_balance(symbol),
                                                current_price=self.exchange_state.last_tick_price(symbol))
             if Trigger.WIGGLE_INCREASE_FILLED in triggers:
-                user_log.info(f'{symbol} {self.position_side.name}: Received trigger WIGGLE_INCREASE_FILLED', __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: Received trigger WIGGLE_INCREASE_FILLED', __name__)
                 self.on_wiggle_increase_filled(symbol=symbol,
                                                position=position,
                                                symbol_information=symbol_information,
@@ -540,7 +539,7 @@ class Strategy(object):
                                           wallet_balance=self.exchange_state.symbol_balance(symbol),
                                           current_price=self.exchange_state.last_tick_price(symbol))
             if Trigger.PERIODIC_CHECK in triggers:
-                logger.info(f'{symbol} {self.position_side.name}: Received trigger PERIODIC_CHECK')
+                logger.debug(f'{symbol} {self.position_side.name}: Received trigger PERIODIC_CHECK')
                 if self.position_side_config.cancel_duplicate_orders:
                     self.cancel_duplicate_side_dca_orders(symbol=symbol, position_side=self.position_side)
                 self.on_periodic_check(symbol=symbol,
@@ -549,16 +548,14 @@ class Strategy(object):
                                        wallet_balance=self.exchange_state.symbol_balance(symbol),
                                        current_price=self.exchange_state.last_tick_price(symbol))
             if Trigger.PULSE in triggers:
-                if self.log_trigger(Trigger.PULSE):
-                    logger.info(f'{symbol} {self.position_side.name}: Received trigger PULSE')
+                logger.debug(f'{symbol} {self.position_side.name}: Received trigger PULSE')
                 self.process_pulse(symbol=symbol,
                                    position=position,
                                    symbol_information=symbol_information,
                                    wallet_balance=self.exchange_state.symbol_balance(symbol),
                                    current_price=self.exchange_state.last_tick_price(symbol))
             if Trigger.MANUAL_PLACE_GRID in triggers:
-                if self.log_trigger(Trigger.MANUAL_PLACE_GRID):
-                    logger.info(f'{symbol} {self.position_side.name}: Received trigger MANUAL_PLACE_GRID')
+                logger.debug(f'{symbol} {self.position_side.name}: Received trigger MANUAL_PLACE_GRID')
                 self.on_manual_place_grid(symbol=symbol,
                                           position=position,
                                           symbol_information=symbol_information,
@@ -566,8 +563,7 @@ class Strategy(object):
                                           current_price=self.exchange_state.last_tick_price(symbol))
 
             if Trigger.MANUAL_REMOVE_GRID in triggers:
-                if self.log_trigger(Trigger.MANUAL_REMOVE_GRID):
-                    logger.info(f'{symbol} {self.position_side.name}: Received trigger MANUAL_REMOVE_GRID')
+                logger.debug(f'{symbol} {self.position_side.name}: Received trigger MANUAL_REMOVE_GRID')
                 self.on_manual_remove_grid(symbol=symbol,
                                            position=position,
                                            symbol_information=symbol_information,
@@ -575,8 +571,7 @@ class Strategy(object):
                                            current_price=self.exchange_state.last_tick_price(symbol))
 
             if Trigger.NEW_DATA in triggers:
-                if self.log_trigger(Trigger.NEW_DATA):
-                    user_log.info(f'{symbol} {self.position_side.name}: Received trigger NEW_DATA', __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: Received trigger NEW_DATA', __name__)
                 self.on_new_data(symbol=symbol,
                                  position=position,
                                  symbol_information=symbol_information,
@@ -584,7 +579,7 @@ class Strategy(object):
                                  current_price=self.exchange_state.last_tick_price(symbol))
 
             if Trigger.UNKNOWN_ORDER_FILLED in triggers:
-                user_log.info(f'{symbol} {self.position_side.name}: An unknown order has been filled', __name__)
+                user_log.debug(f'{symbol} {self.position_side.name}: An unknown order has been filled', __name__)
                 self.on_unknown_filled(symbol=symbol,
                                        position=position,
                                        symbol_information=symbol_information,
