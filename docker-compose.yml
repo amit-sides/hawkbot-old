@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   hawkbot:
-    image: hawkbot
+    build: .
     container_name: hawkbot
     restart: on-failure
     ports:
