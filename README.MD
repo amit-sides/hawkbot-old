@@ -20,3 +20,21 @@ You can join discord at https://discord.gg/GjZ7Eej2N9
 
 # License
 This software is available to use under the EULA specified in the [LICENSE](LICENSE) file.
+
+# Setup
+
+### Docker installation
+#### Prerequisites:
+- Docker 19.03.0+
+- Docker-compose 1.25.5+
+
+#### Steps:
+1. Clone the repository and change directory to the root of the repository.
+2. Configure account's configurations file and place it in `./configs/account.json`.
+3. Configure the bot's configurations file and place it in `./configs/config.json`.
+4. Place license file in `./pyarmor.rkey`.
+5. Run `docker-compose up -d --build` to start the bot.
+6. Run `docker-compose logs -f` to view the logs.
+   * Use `Ctrl+C` to exit.
+   * Use `--tail <number>` to view previous lines.
+7. Run `docker-compose down` to stop the bot.
