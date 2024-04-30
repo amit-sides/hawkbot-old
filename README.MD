@@ -33,8 +33,10 @@ This software is available to use under the EULA specified in the [LICENSE](LICE
 2. Configure account's configurations file and place it in `./configs/account.json`.
 3. Configure the bot's configurations file and place it in `./configs/config.json`.
 4. Place license file in `./pyarmor.rkey`.
-5. Run `docker-compose up -d --build` to start the bot.
-6. Run `docker-compose logs -f` to view the logs.
+5. Change the account name `bybit_01` in the command line of the `docker-compose.yml` file (last line).
+6. Run `docker-compose up -d --build` to start the bot.
+   * Additional command line arguments can be added to the bot's command line using the `PARAMS` environment variable.
+7. Run `docker-compose logs -f` to view the logs.
    * Use `Ctrl+C` to exit.
    * Use `--tail <number>` to view previous lines.
-7. Run `docker-compose down` to stop the bot.
+8. Run `docker-compose down` to stop the bot.
